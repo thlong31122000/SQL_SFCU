@@ -1,4 +1,4 @@
--- Get number of pages a table is currently occupied
+-- 01 Get number of pages a table is currently occupied
 -- Source: https://learn.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-allocation-units-transact-sql?view=sql-server-ver16
 
 SELECT t.object_id AS ObjectID,
@@ -17,3 +17,17 @@ GROUP BY t.object_id,
          u.type_desc
 ORDER BY Used_Space_kb DESC,
          ObjectName;
+
+-- 02 Fragmentation status
+SELECT a.index_id, 
+       NAME, 
+       avg_fragmentation_in_percent, 
+       fragment_count, 
+       avg_fragment_size_in_pages 
+FROM   sys.Dm_db_index_physical_stats(Db_id('dbName'), Object_id('tableName'), 
+       NULL, 
+              NULL, NULL) AS a 
+       INNER JOIN sys.indexes b 
+               ON a.object_id = b.object_id 
+                  AND a.index_id = b.index_id 
+
